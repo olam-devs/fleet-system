@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 const trips = [
   { vehicle: 'T 482 DKL', route: 'Kibaha Depot → Morogoro DC', status: 'In transit', progress: 68, eta: '14:35', source: 'Verified' },
@@ -34,6 +35,7 @@ export default function Home() {
         <aside className="hidden lg:block">
           <nav className="space-y-1 text-sm font-medium">
             <a className="flex items-center gap-3 rounded-xl bg-[#dfeae3] px-4 py-3 text-[#173f35]" href="#">▦ Overview</a>
+            <Link className="flex rounded-xl px-4 py-3 text-[#59665e] hover:bg-white" href="/map">⌖ All vehicles map</Link>
             {['↗ Active trips', '▤ Schedule', '⬡ Vehicles', '⌖ Locations', '⚒ Workshop', '◌ Trip history'].map((item) => <a key={item} className="flex rounded-xl px-4 py-3 text-[#59665e] hover:bg-white" href="#">{item}</a>)}
           </nav>
           <div className="mt-8 rounded-2xl bg-[#173f35] p-4 text-white">
@@ -57,7 +59,7 @@ export default function Home() {
 
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(300px,.75fr)]">
             <article className="overflow-hidden rounded-3xl border border-[#dce2dc] bg-[#dce9e3] shadow-[0_12px_40px_rgba(29,49,38,.06)]">
-              <div className="flex items-center justify-between bg-white px-5 py-4"><div><h2 className="font-semibold">Live movement</h2><p className="text-xs text-[#68756d]">Verified positions across active journeys</p></div><button className="rounded-lg border border-[#dce2dc] px-3 py-2 text-xs font-semibold">Open full map</button></div>
+              <div className="flex items-center justify-between bg-white px-5 py-4"><div><h2 className="font-semibold">Live movement</h2><p className="text-xs text-[#68756d]">Verified positions across active journeys</p></div><Link href="/map" className="rounded-lg border border-[#dce2dc] px-3 py-2 text-xs font-semibold">Open full map</Link></div>
               <div className="relative h-[360px] overflow-hidden bg-[linear-gradient(35deg,transparent_47%,rgba(255,255,255,.65)_48%,rgba(255,255,255,.65)_52%,transparent_53%),linear-gradient(110deg,transparent_47%,rgba(255,255,255,.55)_48%,rgba(255,255,255,.55)_52%,transparent_53%)] bg-[length:150px_130px]">
                 <div className="absolute left-[18%] top-[60%] h-2 w-[56%] -rotate-[14deg] rounded-full bg-[#e56a3d] shadow-[0_0_0_4px_rgba(229,106,61,.15)]" />
                 <span className="absolute left-[15%] top-[62%] size-5 rounded-full border-4 border-white bg-[#173f35] shadow-lg" />

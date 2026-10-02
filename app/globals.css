@@ -1,7 +1,10 @@
 @import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
 
 :root { color-scheme: light; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: var(--font-geist-sans), Arial, sans-serif; }
 button, a { transition: background-color 160ms ease, color 160ms ease, transform 160ms ease; }
 button:active { transform: translateY(1px); }
+.leaflet-container { font-family: var(--font-geist-sans), Arial, sans-serif; background: #dce9e3; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: 0 12px 35px rgba(23, 63, 53, .16); }

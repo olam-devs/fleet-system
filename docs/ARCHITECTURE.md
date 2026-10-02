@@ -22,6 +22,7 @@ JourneyOps assigns vehicles to journeys, follows them to the starting point and 
 - Two fresh, usable positions separated by more than 200 metres are marked as a conflict. CMSV6 remains the selected operational position, but automated arrival/departure changes pause until the conflict clears or is confirmed.
 - An observation is fresh for two minutes and stale after ten minutes by default. These thresholds remain configurable.
 - State changes require consecutive qualifying observations to avoid GPS jump errors.
+- Cartrack `gps_fix_type` values 0–1 are untargeted; 2–3 are targeted, following the current official Fleet API schema.
 
 ## Security boundaries
 
