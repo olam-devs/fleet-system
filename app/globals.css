@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font-geist-sans), Arial, sans-serif; }
+button, a { transition: background-color 160ms ease, color 160ms ease, transform 160ms ease; }
+button:active { transform: translateY(1px); }
