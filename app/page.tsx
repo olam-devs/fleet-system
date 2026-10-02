@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 const trips = [
   { vehicle: 'T 482 DKL', route: 'Kibaha Depot → Morogoro DC', status: 'In transit', progress: 68, eta: '14:35', source: 'Verified' },
   { vehicle: 'T 193 EAV', route: 'Dar Port → Mkuranga Yard', status: 'At start point', progress: 8, eta: '15:10', source: 'Live' },
@@ -16,7 +18,9 @@ export default function Home() {
       <header className="border-b border-[#dce2dc] bg-[#fbfcf9] px-4 py-4 lg:px-8">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl bg-[#173f35] text-lg font-bold text-white">S</div>
+            <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl border border-[#eadedb] bg-white p-1 shadow-sm">
+              <Image className="size-full object-contain" src="/starlink-logo.png" width={56} height={56} alt="Starlink Gulf Trading Ltd logo" priority />
+            </div>
             <div><p className="font-semibold leading-tight">Starlink Fleet System</p><p className="text-xs text-[#68756d]">Fleet movement control</p></div>
           </div>
           <div className="flex items-center gap-3">

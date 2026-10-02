@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.PUBLIC_APP_ORIGIN ?? 'http://localhost:3000'),
   title: 'Starlink Fleet System — Fleet Movement Control',
   description: 'Plan, track, verify and review vehicle journeys across CMSV6 and Cartrack.',
+  icons: {
+    icon: '/starlink-logo.png',
+    apple: '/starlink-logo.png',
+  },
   openGraph: {
     title: 'Starlink Fleet System — Fleet Movement Control',
     description: 'Plan, track, verify and review vehicle journeys across CMSV6 and Cartrack.',
