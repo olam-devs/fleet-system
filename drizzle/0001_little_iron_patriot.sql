@@ -1,0 +1,1 @@
+ALTER TABLE `provider_observations` ADD `positioning_status` text DEFAULT 'unknown' NOT NULL;

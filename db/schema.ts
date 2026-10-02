@@ -57,6 +57,7 @@ export const providerObservations = sqliteTable('provider_observations', {
   longitude: real('longitude').notNull(),
   speedKph: real('speed_kph'),
   ignition: integer('ignition', { mode: 'boolean' }),
+  positioningStatus: text('positioning_status', { enum: ['targeted', 'untargeted', 'unknown'] }).notNull().default('unknown'),
   gpsRecordedAt: integer('gps_recorded_at', { mode: 'timestamp_ms' }).notNull(),
   receivedAt: integer('received_at', { mode: 'timestamp_ms' }).notNull(),
   providerEventId: text('provider_event_id'),

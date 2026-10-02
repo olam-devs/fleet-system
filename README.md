@@ -1,6 +1,6 @@
-# JourneyOps
+# Starlink Fleet System
 
-JourneyOps is a focused vehicle-journey operations web application. It combines CMSV6 and Cartrack location evidence, manages scheduled trips and return movement, preserves completed route history, and raises workshop-overstay reminders.
+Starlink Fleet System is a focused vehicle-journey operations web application. It combines CMSV6 and Cartrack location evidence, manages scheduled trips and return movement, preserves completed route history, and raises workshop-overstay reminders. The repository keeps the internal package name `journey-ops` until the final deployment naming is agreed.
 
 ## Current foundation
 

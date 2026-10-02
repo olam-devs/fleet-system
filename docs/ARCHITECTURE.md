@@ -16,8 +16,10 @@ JourneyOps assigns vehicles to journeys, follows them to the starting point and 
 ## Location policy
 
 - CMSV6 is primary when both sources are fresh and agree.
+- CMSV6 `gpsValid=false` (shown by the vendor as **untargeted**) invalidates that observation. If Cartrack has a fresh usable position, Cartrack becomes the temporary fallback even when the CMSV6 response itself is recent.
+- Cartrack positioning quality is stored as `unknown` until its live payload is verified for a comparable validity flag. A current timestamp and valid coordinate range make it usable, but not positively "targeted".
 - A fresh Cartrack position can replace stale CMSV6 data.
-- Two fresh positions separated by more than 200 metres are marked as a conflict; automated arrival/departure changes pause until resolved or confirmed.
+- Two fresh, usable positions separated by more than 200 metres are marked as a conflict. CMSV6 remains the selected operational position, but automated arrival/departure changes pause until the conflict clears or is confirmed.
 - An observation is fresh for two minutes and stale after ten minutes by default. These thresholds remain configurable.
 - State changes require consecutive qualifying observations to avoid GPS jump errors.
 

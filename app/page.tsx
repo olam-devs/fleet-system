@@ -1,7 +1,7 @@
 const trips = [
   { vehicle: 'T 482 DKL', route: 'Kibaha Depot → Morogoro DC', status: 'In transit', progress: 68, eta: '14:35', source: 'Verified' },
-  { vehicle: 'T 193 EAV', route: 'Dar Port → Mkuranga Yard', status: 'At start point', progress: 8, eta: '15:10', source: 'CMSV6' },
-  { vehicle: 'T 771 CQM', route: 'Bagamoyo → Tegeta Hub', status: 'To start point', progress: 31, eta: '16:05', source: 'Cartrack' },
+  { vehicle: 'T 193 EAV', route: 'Dar Port → Mkuranga Yard', status: 'At start point', progress: 8, eta: '15:10', source: 'Live' },
+  { vehicle: 'T 771 CQM', route: 'Bagamoyo → Tegeta Hub', status: 'To start point', progress: 31, eta: '16:05', source: 'Alternate GPS' },
 ];
 
 const alerts = [
@@ -16,8 +16,8 @@ export default function Home() {
       <header className="border-b border-[#dce2dc] bg-[#fbfcf9] px-4 py-4 lg:px-8">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl bg-[#173f35] text-lg font-bold text-white">J</div>
-            <div><p className="font-semibold leading-tight">JourneyOps</p><p className="text-xs text-[#68756d]">Fleet movement control</p></div>
+            <div className="grid size-10 place-items-center rounded-xl bg-[#173f35] text-lg font-bold text-white">S</div>
+            <div><p className="font-semibold leading-tight">Starlink Fleet System</p><p className="text-xs text-[#68756d]">Fleet movement control</p></div>
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden rounded-full bg-[#e5f4ec] px-3 py-1.5 text-xs font-semibold text-[#16613f] sm:inline">● 18 vehicles reporting</span>
@@ -59,7 +59,7 @@ export default function Home() {
                 <span className="absolute left-[15%] top-[62%] size-5 rounded-full border-4 border-white bg-[#173f35] shadow-lg" />
                 <span className="absolute left-[49%] top-[48%] grid size-9 place-items-center rounded-full border-4 border-white bg-[#e56a3d] text-xs font-bold text-white shadow-lg">68</span>
                 <span className="absolute left-[73%] top-[36%] size-5 rounded-full border-4 border-white bg-[#173f35] shadow-lg" />
-                <div className="absolute bottom-4 left-4 rounded-xl bg-white/95 px-4 py-3 shadow-lg"><p className="text-xs font-semibold text-[#e56a3d]">T 482 DKL</p><p className="text-sm font-medium">68% to Morogoro DC</p><p className="mt-1 text-xs text-[#68756d]">CMSV6 + Cartrack verified</p></div>
+                <div className="absolute bottom-4 left-4 rounded-xl bg-white/95 px-4 py-3 shadow-lg"><p className="text-xs font-semibold text-[#e56a3d]">T 482 DKL</p><p className="text-sm font-medium">68% to Morogoro DC</p><p className="mt-1 text-xs text-[#68756d]">Position cross-checked</p></div>
               </div>
             </article>
 

@@ -5,6 +5,7 @@ export interface LocationObservation {
   latitude: number;
   longitude: number;
   gpsRecordedAt: Date;
+  positioningStatus?: 'targeted' | 'untargeted' | 'unknown';
 }
 
 export interface ResolvedLocation {
@@ -12,6 +13,7 @@ export interface ResolvedLocation {
   verification: 'verified' | 'single_source' | 'fallback' | 'conflict' | 'stale' | 'unavailable';
   distanceBetweenSourcesMeters: number | null;
   evidence: LocationObservation[];
+  rejectedEvidence: LocationObservation[];
 }
 
 const EARTH_RADIUS_METERS = 6_371_000;
@@ -40,25 +42,28 @@ export function resolveLocation(
   }
 
   const evidence = [...latest.values()];
-  if (evidence.length === 0) return { selected: null, verification: 'unavailable', distanceBetweenSourcesMeters: null, evidence };
+  const rejectedEvidence = evidence.filter((item) => item.positioningStatus === 'untargeted');
+  const usable = evidence.filter((item) => item.positioningStatus !== 'untargeted');
+  if (usable.length === 0) return { selected: null, verification: 'unavailable', distanceBetweenSourcesMeters: null, evidence, rejectedEvidence };
 
   const age = (item: LocationObservation) => Math.max(0, now.getTime() - item.gpsRecordedAt.getTime());
-  const cmsv6 = latest.get('cmsv6');
-  const cartrack = latest.get('cartrack');
+  const cmsv6 = usable.find((item) => item.provider === 'cmsv6');
+  const cartrack = usable.find((item) => item.provider === 'cartrack');
 
   if (!cmsv6 || !cartrack) {
     const selected = cmsv6 ?? cartrack!;
-    return { selected, verification: age(selected) > staleAfterMs ? 'stale' : 'single_source', distanceBetweenSourcesMeters: null, evidence };
+    const verification = age(selected) > staleAfterMs ? 'stale' : rejectedEvidence.length > 0 ? 'fallback' : 'single_source';
+    return { selected, verification, distanceBetweenSourcesMeters: null, evidence, rejectedEvidence };
   }
 
   const separation = distanceMeters(cmsv6, cartrack);
   const cmsFresh = age(cmsv6) <= freshForMs;
   const carFresh = age(cartrack) <= freshForMs;
-  if (cmsFresh && carFresh && separation <= agreementMeters) return { selected: cmsv6, verification: 'verified', distanceBetweenSourcesMeters: separation, evidence };
-  if (cmsFresh && carFresh) return { selected: cmsv6, verification: 'conflict', distanceBetweenSourcesMeters: separation, evidence };
-  if (cmsFresh) return { selected: cmsv6, verification: 'fallback', distanceBetweenSourcesMeters: separation, evidence };
-  if (carFresh) return { selected: cartrack, verification: 'fallback', distanceBetweenSourcesMeters: separation, evidence };
+  if (cmsFresh && carFresh && separation <= agreementMeters) return { selected: cmsv6, verification: 'verified', distanceBetweenSourcesMeters: separation, evidence, rejectedEvidence };
+  if (cmsFresh && carFresh) return { selected: cmsv6, verification: 'conflict', distanceBetweenSourcesMeters: separation, evidence, rejectedEvidence };
+  if (cmsFresh) return { selected: cmsv6, verification: 'fallback', distanceBetweenSourcesMeters: separation, evidence, rejectedEvidence };
+  if (carFresh) return { selected: cartrack, verification: 'fallback', distanceBetweenSourcesMeters: separation, evidence, rejectedEvidence };
 
   const selected = cmsv6.gpsRecordedAt >= cartrack.gpsRecordedAt ? cmsv6 : cartrack;
-  return { selected, verification: age(selected) > staleAfterMs ? 'stale' : 'fallback', distanceBetweenSourcesMeters: separation, evidence };
+  return { selected, verification: age(selected) > staleAfterMs ? 'stale' : 'fallback', distanceBetweenSourcesMeters: separation, evidence, rejectedEvidence };
 }
