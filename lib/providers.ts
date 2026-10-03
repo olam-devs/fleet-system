@@ -57,15 +57,17 @@ export async function fetchCmsv6Vehicles(): Promise<{ vehicles: ProviderVehicle[
     const fleet = asRecord(await getJson(endpoint(base, 'StandardApiAction_queryUserVehicle.action', { jsession: session, language: 'en' })));
     const status = asRecord(await getJson(endpoint(base, 'StandardApiAction_getDeviceStatus.action', { jsession: session, toMap: 1, geoaddress: 1, language: 'en' })));
 
-    const byDevice = new Map<string, { registration: string; online: boolean }>();
+    const companyNames = new Map(asArray(fleet.companys).map((item) => { const company = asRecord(item); return [asString(company.id), asString(company.nm || company.name)] as const; }));
+    const byDevice = new Map<string, { registration: string; online: boolean; providerGroup?: string }>();
     for (const item of asArray(fleet.vehicles ?? fleet.vehicle ?? fleet.data ?? fleet.onlines)) {
       const vehicle = asRecord(item);
       const registration = asString(vehicle.nm || vehicle.vehiName || vehicle.name || vehicle.plate || vehicle.id);
       const devices = asArray(vehicle.dl ?? vehicle.dev ?? vehicle.devices ?? vehicle.lstDevice ?? vehicle.device);
-      if (devices.length === 0) byDevice.set(asString(vehicle.id), { registration, online: Number(vehicle.ol ?? vehicle.online ?? 0) > 0 });
+      const providerGroup = companyNames.get(asString(vehicle.pid ?? vehicle.pId));
+      if (devices.length === 0) byDevice.set(asString(vehicle.id), { registration, online: Number(vehicle.ol ?? vehicle.online ?? 0) > 0, providerGroup });
       for (const rawDevice of devices) {
         const device = asRecord(rawDevice);
-        byDevice.set(asString(device.id || device.devIdno || device.devIDNO), { registration, online: Number(vehicle.ol ?? device.ol ?? vehicle.online ?? device.online ?? 0) > 0 });
+        byDevice.set(asString(device.id || device.devIdno || device.devIDNO), { registration, online: Number(vehicle.ol ?? device.ol ?? vehicle.online ?? device.online ?? 0) > 0, providerGroup });
       }
     }
 
@@ -87,6 +89,7 @@ export async function fetchCmsv6Vehicles(): Promise<{ vehicles: ProviderVehicle[
         heading: asNumber(row.hx ?? row.heading ?? row.direction),
         online: Number(row.ol ?? row.online ?? (joined.online ? 1 : 0)) > 0,
         positioningStatus: (s1 & 1) === 1 ? 'targeted' : 'untargeted', address: asString(row.ps ?? row.address) || undefined,
+        providerGroup: joined.providerGroup,
       });
     }
     return { vehicles, health: { provider: 'cmsv6', configured: true, ok: true, message: 'Connected', vehicleCount: vehicles.length } };

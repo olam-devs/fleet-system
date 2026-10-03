@@ -6,7 +6,7 @@ import type { LiveVehicle } from '@/lib/live-vehicles';
 import type { ProviderHealth } from '@/lib/providers';
 
 interface LiveResponse { vehicles: LiveVehicle[]; providers: ProviderHealth[]; generatedAt: string }
-const freshness = (iso: string) => { const minutes = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60_000)); return minutes < 1 ? 'just now' : `${minutes} min ago`; };
+const freshness = (iso: string) => { const minutes = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60_000)); if (minutes < 1) return 'just now'; if (minutes < 60) return `${minutes} min ago`; const hours = Math.floor(minutes / 60); if (hours < 24) return `${hours} hr${hours === 1 ? '' : 's'} ago`; const days = Math.floor(hours / 24); return `${days} day${days === 1 ? '' : 's'} ago`; };
 const markerColor = (vehicle: LiveVehicle) => vehicle.verification === 'conflict' ? '#dc2626' : vehicle.verification === 'stale' ? '#64748b' : vehicle.speedKph && vehicle.speedKph > 2 ? '#15803d' : '#d97706';
 
 export default function LiveDashboard() {
@@ -14,14 +14,14 @@ export default function LiveDashboard() {
   const [loading, setLoading] = useState(true);
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<import('leaflet').Map | null>(null);
-  const markerLayer = useRef<import('leaflet').LayerGroup | null>(null);
+  const markerLayer = useRef<import('leaflet').MarkerClusterGroup | null>(null);
   const refresh = async () => { try { const response = await fetch('/api/vehicles/live', { cache: 'no-store' }); if (!response.ok) throw new Error('Unable to load vehicles'); setData(await response.json() as LiveResponse); } finally { setLoading(false); } };
 
   useEffect(() => { refresh(); const timer = window.setInterval(refresh, 30_000); return () => window.clearInterval(timer); }, []);
   useEffect(() => {
     if (!mapElement.current || mapInstance.current) return;
     let cancelled = false;
-    import('leaflet').then((L) => { if (cancelled || !mapElement.current) return; const map = L.map(mapElement.current, { zoomControl: false }).setView([-6.4, 35], 6); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map); markerLayer.current = L.layerGroup().addTo(map); mapInstance.current = map; });
+    Promise.all([import('leaflet'), import('leaflet.markercluster')]).then(([L]) => { if (cancelled || !mapElement.current) return; const map = L.map(mapElement.current, { zoomControl: false }).setView([-6.4, 35], 6); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map); markerLayer.current = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 55, iconCreateFunction: (cluster) => L.divIcon({ className: 'fleet-cluster-wrap', html: `<span class="fleet-cluster">${cluster.getChildCount()}</span>`, iconSize: [46, 46] }) }).addTo(map); mapInstance.current = map; });
     return () => { cancelled = true; mapInstance.current?.remove(); mapInstance.current = null; };
   }, []);
   useEffect(() => {

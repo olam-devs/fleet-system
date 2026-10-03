@@ -14,6 +14,7 @@ export interface ProviderVehicle {
   online: boolean;
   positioningStatus: 'targeted' | 'untargeted' | 'unknown';
   address?: string;
+  providerGroup?: string;
 }
 
 export interface LiveVehicle {
@@ -32,6 +33,9 @@ export interface LiveVehicle {
   verification: 'verified' | 'single_source' | 'fallback' | 'conflict' | 'stale';
   positioningStatus: 'targeted' | 'unknown';
   sourceDistanceMeters: number | null;
+  cmsGroup: string | null;
+  groupId?: string | null;
+  groupName?: string | null;
 }
 
 export const normalizeRegistration = (value: string) => value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -70,6 +74,7 @@ export function mergeProviderVehicles(rows: ProviderVehicle[], now = new Date())
       verification: resolved.verification,
       positioningStatus: resolved.selected.positioningStatus === 'targeted' ? 'targeted' : 'unknown',
       sourceDistanceMeters: resolved.distanceBetweenSourcesMeters,
+      cmsGroup: records.find((row) => row.provider === 'cmsv6')?.providerGroup ?? null,
     } satisfies LiveVehicle];
   }).sort((a, b) => a.registration.localeCompare(b.registration));
 }

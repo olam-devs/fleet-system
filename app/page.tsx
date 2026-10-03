@@ -10,7 +10,7 @@ export default function Home() {
           <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl border border-[#eadedb] bg-white p-1 shadow-sm"><Image className="size-full object-contain" src="/starlink-logo.png" width={56} height={56} alt="Starlink Gulf Trading Ltd logo" priority /></span>
           <span><span className="block font-semibold leading-tight">Starlink Fleet System</span><span className="block text-xs text-[#68756d]">Fleet movement control</span></span>
         </Link>
-        <Link href="/map" className="rounded-xl bg-[#8f1712] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#74130f]">Open map mode</Link>
+        <nav className="flex gap-2"><Link href="/map" className="rounded-xl px-4 py-2.5 text-sm font-semibold text-[#59665e] hover:bg-white">Map</Link><Link href="/trips" className="rounded-xl bg-[#8f1712] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#74130f]">Trips</Link></nav>
       </div>
     </header>
     <LiveDashboard />

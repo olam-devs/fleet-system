@@ -29,6 +29,21 @@ export const savedLocations = sqliteTable('saved_locations', {
   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
 });
 
+export const vehicleGroups = sqliteTable('vehicle_groups', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  parentId: text('parent_id'),
+  source: text('source', { enum: ['cmsv6', 'local'] }).notNull().default('local'),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+}, (table) => [uniqueIndex('idx_vehicle_groups_name_parent').on(table.name, table.parentId)]);
+
+export const vehicleGroupAssignments = sqliteTable('vehicle_group_assignments', {
+  vehicleId: text('vehicle_id').primaryKey(),
+  groupId: text('group_id').notNull().references(() => vehicleGroups.id),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+});
+
 export const trips = sqliteTable('trips', {
   id: text('id').primaryKey(),
   vehicleId: text('vehicle_id').notNull().references(() => vehicles.id),
