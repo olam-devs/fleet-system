@@ -11,6 +11,9 @@ const freshness = (iso: string) => {
   return minutes < 1 ? 'just now' : `${minutes} min ago`;
 };
 
+const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]!);
+const markerColor = (vehicle: LiveVehicle) => vehicle.verification === 'conflict' ? '#dc2626' : vehicle.verification === 'stale' ? '#64748b' : vehicle.speedKph && vehicle.speedKph > 2 ? '#15803d' : '#d97706';
+
 export default function FleetMap() {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<import('leaflet').Map | null>(null);
@@ -51,10 +54,17 @@ export default function FleetMap() {
       layer.clearLayers();
       const bounds: [number, number][] = [];
       for (const vehicle of data.vehicles) {
-        const color = vehicle.verification === 'conflict' ? '#dc2626' : vehicle.verification === 'stale' ? '#64748b' : vehicle.speedKph && vehicle.speedKph > 2 ? '#15803d' : '#d97706';
-        const marker = L.circleMarker([vehicle.latitude, vehicle.longitude], { radius: selected === vehicle.id ? 11 : 8, color: '#fff', weight: 3, fillColor: color, fillOpacity: 1 })
+        const color = markerColor(vehicle);
+        const size = selected === vehicle.id ? 48 : 40;
+        const heading = Number.isFinite(vehicle.heading) ? vehicle.heading! - 90 : 0;
+        const icon = L.divIcon({
+          className: 'helion-vehicle-marker',
+          html: `<span class="helion-vehicle-art" style="width:${size}px;height:${size}px;transform:rotate(${heading}deg)"><img src="/vehicle-icons/helion-truck.jpg" alt=""><i style="background:${color}"></i></span>`,
+          iconSize: [size, size], iconAnchor: [size / 2, size / 2], popupAnchor: [0, -size / 2],
+        });
+        const marker = L.marker([vehicle.latitude, vehicle.longitude], { icon, zIndexOffset: selected === vehicle.id ? 1000 : 0 })
           .bindTooltip(vehicle.registration, { permanent: selected === vehicle.id, direction: 'top', offset: [0, -8] })
-          .bindPopup(`<strong>${vehicle.registration}</strong><br>${vehicle.speedKph ?? 0} km/h · ${vehicle.verification.replace('_', ' ')}<br>Updated ${freshness(vehicle.gpsRecordedAt)}`)
+          .bindPopup(`<strong>${escapeHtml(vehicle.registration)}</strong><br>${vehicle.speedKph ?? 0} km/h · ${vehicle.verification.replace('_', ' ')}<br>Updated ${freshness(vehicle.gpsRecordedAt)}`)
           .on('click', () => setSelected(vehicle.id));
         layer.addLayer(marker); bounds.push([vehicle.latitude, vehicle.longitude]);
       }

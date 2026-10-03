@@ -9,6 +9,7 @@ export interface ProviderVehicle {
   longitude: number;
   gpsRecordedAt: Date;
   speedKph?: number;
+  heading?: number;
   ignition?: boolean;
   online: boolean;
   positioningStatus: 'targeted' | 'untargeted' | 'unknown';
@@ -22,6 +23,7 @@ export interface LiveVehicle {
   longitude: number;
   gpsRecordedAt: string;
   speedKph: number | null;
+  heading: number | null;
   ignition: boolean | null;
   online: boolean;
   address: string | null;
@@ -59,6 +61,7 @@ export function mergeProviderVehicles(rows: ProviderVehicle[], now = new Date())
       longitude: resolved.selected.longitude,
       gpsRecordedAt: resolved.selected.gpsRecordedAt.toISOString(),
       speedKph: selectedRecord.speedKph ?? null,
+      heading: selectedRecord.heading ?? null,
       ignition: selectedRecord.ignition ?? null,
       online: selectedRecord.online,
       address: selectedRecord.address ?? null,

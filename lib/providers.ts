@@ -16,6 +16,13 @@ const asNumber = (value: unknown): number | undefined => {
   return Number.isFinite(number) ? number : undefined;
 };
 const validCoordinate = (lat?: number, lng?: number) => lat !== undefined && lng !== undefined && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && !(lat === 0 && lng === 0);
+const normalizeIdentifier = (value: string) => value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+export const hasRealRegistration = (registration: string, deviceId: string) => {
+  const plate = normalizeIdentifier(registration);
+  const device = normalizeIdentifier(deviceId);
+  return plate.length > 0 && plate !== device;
+};
 
 function parseCmsTime(value: unknown): Date {
   const raw = asString(value);
@@ -72,10 +79,12 @@ export async function fetchCmsv6Vehicles(): Promise<{ vehicles: ProviderVehicle[
       const lat = rawLat && Math.abs(rawLat) > 90 ? rawLat / 1_000_000 : rawLat ?? asNumber(row.mlat);
       const lng = rawLng && Math.abs(rawLng) > 180 ? rawLng / 1_000_000 : rawLng ?? asNumber(row.mlng);
       if (!joined || !validCoordinate(lat, lng)) continue;
+      if (!hasRealRegistration(joined.registration, providerId)) continue;
       const s1 = asNumber(row.s1 ?? row.status1) ?? 0;
       vehicles.push({
         provider: 'cmsv6', providerId, registration: joined.registration, latitude: lat!, longitude: lng!,
         gpsRecordedAt: parseCmsTime(row.gt ?? row.gpsTime), speedKph: (asNumber(row.sp ?? row.spd) ?? 0) / 10,
+        heading: asNumber(row.hx ?? row.heading ?? row.direction),
         online: Number(row.ol ?? row.online ?? (joined.online ? 1 : 0)) > 0,
         positioningStatus: (s1 & 1) === 1 ? 'targeted' : 'untargeted', address: asString(row.ps ?? row.address) || undefined,
       });
@@ -109,6 +118,7 @@ export async function fetchCartrackVehicles(): Promise<{ vehicles: ProviderVehic
         provider: 'cartrack' as const, providerId: asString(row.vehicle_id), registration: asString(row.registration),
         chassisNumber: asString(row.chassis_number) || undefined, latitude: latitude!, longitude: longitude!,
         gpsRecordedAt: Number.isNaN(date.getTime()) ? new Date(0) : date, speedKph: asNumber(row.speed),
+        heading: asNumber(row.bearing ?? location.bearing ?? row.heading),
         ignition: typeof row.ignition === 'boolean' ? row.ignition : undefined, online: true,
         positioningStatus: fix === undefined ? 'unknown' as const : fix >= 2 ? 'targeted' as const : 'untargeted' as const,
         address: asString(location.position_description) || undefined,
