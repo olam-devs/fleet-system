@@ -7,11 +7,11 @@ JourneyOps assigns vehicles to journeys, follows them to the starting point and 
 ## Runtime shape
 
 1. Provider adapters poll CMSV6 and Cartrack from the server. Browser clients never receive provider credentials.
-2. Raw provider observations are stored unchanged with their GPS and receipt timestamps.
-3. The location resolver selects one operational position while preserving both sources as evidence.
-4. The trip-state engine evaluates confirmed geofence transitions and records immutable events.
-5. The web application reads active state and completed route history from our database, not from provider APIs on every page load.
-6. Provider history endpoints are used only to repair identified gaps.
+2. Today, live provider polling happens on server API requests; the planned worker will store raw observations with GPS and receipt timestamps.
+3. The location resolver selects one operational position while preserving both sources in the current merge result.
+4. The initial trip-state engine evaluates geofence transitions. Consecutive-point confirmation and immutable audit events remain required.
+5. Groups and trips use the local database. Continuous trip route history is not yet persisted.
+6. The target architecture reads completed route history from our database and uses provider history only to repair identified gaps.
 
 ## Location policy
 

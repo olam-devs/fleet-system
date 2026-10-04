@@ -1,23 +1,30 @@
 # Starlink Fleet System
 
-Starlink Fleet System is a focused vehicle-journey operations web application. It combines CMSV6 and Cartrack location evidence, manages scheduled trips and return movement, preserves completed route history, and raises workshop-overstay reminders. The repository keeps the internal package name `journey-ops` until the final deployment naming is agreed.
+Starlink Fleet System is a web application for real-time vehicle visibility, editable fleet groups, trip assignment, destination/return tracking, and planned workshop monitoring. It combines CMSV6 and Cartrack location evidence while presenting one operational position per vehicle.
 
-## Current foundation
+## Implemented
 
-- Responsive operations dashboard
-- Dual-provider location-resolution policy
-- Relational schema for vehicles, saved locations, trips, observations, route points, events, workshop stays, and notifications
-- Local database migration workflow
-- Secret-safe environment template
-- Architecture prepared for a later VPS web-server and worker deployment
+- Live overview and clustered fleet map using real provider data
+- CMSV6-primary, Cartrack-fallback location resolution
+- Invalid CMSV device-ID registrations excluded
+- Helion-style directional vehicle markers
+- Editable groups/subgroups seeded from CMSV6
+- Initial persistent trip workflow through return or the next trip's start
+- D1-compatible relational schema and migrations
 
-## Local development
+## Start here
 
-Use Node.js 22 or later. Copy `.env.example` to `.env.local` and keep real values out of Git. The current dashboard uses representative data while provider adapters and authenticated workflows are built.
+- AI/developer rules: `AGENTS.md`
+- Short context: `AI_CONTEXT.md`
+- Current boundary: `docs/PROJECT_STATUS.md`
+- New-computer setup: `docs/SETUP.md`
+- File routing: `docs/INDEX.md`
+- Decisions and roadmap: `docs/DECISIONS.md`, `docs/ROADMAP.md`
 
-```bash
+```powershell
 npm install
+Copy-Item .env.example .env.local
 npm run dev
 ```
 
-See `docs/ARCHITECTURE.md` for source-selection, storage, and VPS decisions.
+Real environment values are never stored in Git. See `docs/SETUP.md`.
